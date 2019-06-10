@@ -1,4 +1,4 @@
-package pl.codeve.inspectorbudget.model;
+package pl.codeve.inspectorbudget.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
