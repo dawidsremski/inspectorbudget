@@ -42,13 +42,17 @@ export function getCurrentUser() {
     });
 }
 
-export function signUp() {
-
+export function signUp(signupRequest) {
+    return request({
+        url: API_BASE_URL + "/auth/signup",
+        method: 'POST',
+        body: JSON.stringify(signupRequest)
+    })
 }
 
-export function checkUsernameAvailability(userName) {
+export function checkUsernameAvailability(username) {
     return request({
-        url: API_BASE_URL + "/user/checkUsernameAvailability?userName=" + userName,
+        url: API_BASE_URL + "/user/checkUsernameAvailability?username=" + username,
         method: 'GET'
     });
 }

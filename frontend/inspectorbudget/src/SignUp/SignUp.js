@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './SignUp.css';
 import { signUp, checkUsernameAvailability, checkEmailAvailability } from '../APIUtils';
-import { Link } from 'react-router-dom';
+import {Link, withRouter} from 'react-router-dom';
 import {
     NAME_MIN_LENGTH, NAME_MAX_LENGTH,
     USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH,
@@ -52,13 +52,13 @@ class SignUp extends Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        const signUpRequest = {
+        const signupRequest = {
             name: this.state.name.value,
             email: this.state.email.value,
             username: this.state.username.value,
             password: this.state.password.value
         };
-        signUp(signUpRequest)
+        signUp(signupRequest)
             .then(response => {
                 notification.success({
                     message: 'Inspector Budget',
@@ -362,4 +362,4 @@ class SignUp extends Component {
 
 }
 
-export default SignUp;
+export default withRouter(SignUp);
