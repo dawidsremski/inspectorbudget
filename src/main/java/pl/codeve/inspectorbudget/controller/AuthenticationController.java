@@ -3,17 +3,16 @@ package pl.codeve.inspectorbudget.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.codeve.inspectorbudget.model.ApiResponse;
-import pl.codeve.inspectorbudget.model.Role;
-import pl.codeve.inspectorbudget.model.RoleName;
-import pl.codeve.inspectorbudget.model.User;
+import pl.codeve.inspectorbudget.model.*;
 import pl.codeve.inspectorbudget.repository.RoleRepository;
 import pl.codeve.inspectorbudget.repository.UserRepository;
 import pl.codeve.inspectorbudget.security.JwtTokenProvider;
-import pl.codeve.inspectorbudget.model.SignUpRequest;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -70,5 +69,21 @@ public class AuthenticationController {
                 .buildAndExpand(result.getUsername()).toUri();
 
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully."));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getUsernameOrEmail(),
+                        loginRequest.getPassword()
+                )
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = tokenProvider.generateToken(authentication);
+        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 }

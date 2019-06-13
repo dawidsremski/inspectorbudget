@@ -10,8 +10,8 @@ class AppHeader extends Component {
         let menuItems;
         if(this.props.currentUser) {
             menuItems = [
-            <Menu.Item key="/logout">
-                <Link to="/logout">Logout</Link>
+            <Menu.Item key="/" onClick={this.props.onLogout}>
+                <Link to="/">Logout</Link>
             </Menu.Item>
             ];
         } else {

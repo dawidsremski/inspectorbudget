@@ -1,6 +1,7 @@
 package pl.codeve.inspectorbudget.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = "users")
 public class User extends DateAudit {
 

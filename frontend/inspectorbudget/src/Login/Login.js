@@ -64,20 +64,21 @@ class LoginForm extends Component {
                             description: error.message || 'Sorry! Something went wrong. Please try again!'
                         });
                     }
-                }).finally(() => {
-                    this.setState({
-                        usernameOrEmail: {
-                            value: ''
-                        },
-                        password: {
-                            value: ''
-                        }
-                    });
-                    this.props.form.setFieldsValue({
-                        usernameOrEmail: '',
-                        password: ''
-                    });
-                });
+                })
+                // .finally(() => {
+                //     this.setState({
+                //         usernameOrEmail: {
+                //             value: ''
+                //         },
+                //         password: {
+                //             value: ''
+                //         }
+                //     });
+                //     this.props.form.setFieldsValue({
+                //         usernameOrEmail: '',
+                //         password: ''
+                //     });
+                // });
             }
         });
     }

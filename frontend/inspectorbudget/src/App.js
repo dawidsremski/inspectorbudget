@@ -6,8 +6,8 @@ import Login from "./Login/Login";
 import {Route, Switch, withRouter} from "react-router-dom";
 import {getCurrentUser} from "./APIUtils";
 import SignUp from "./SignUp/SignUp";
+import {ACCESS_TOKEN} from "./config/index";
 const { Content } = Layout;
-
 
 class App extends Component {
     constructor(props) {
@@ -22,20 +22,34 @@ class App extends Component {
         this.loadCurrentUser = this.loadCurrentUser.bind(this);
     }
 
-    handleLogin() {
-        notification.success({
-            message: "You're successfully logged in.",
-            description: `Welcome in Inspector Budget, ${this.state.currentUser.userName}`
-        });
+    componentDidMount() {
         this.loadCurrentUser();
-        this.props.history.push("/");
+    }
+
+    handleLogin() {
+        this.loadCurrentUser(() => {
+            notification.success({
+                message: "You're successfully logged in.",
+                description: `Welcome in Inspector Budget, ${this.state.currentUser.name}!`
+            });
+            this.props.history.push("/");
+        });
     }
 
     handleLogout() {
-
+        localStorage.removeItem(ACCESS_TOKEN);
+        this.setState({
+            currentUser: null,
+            isAuthenticated: false
+        });
+        this.props.history.push("/");
+        notification.success({
+            message: "You're successfully logged out.",
+            description: "Good bye!",
+        });
     }
 
-    loadCurrentUser() {
+    loadCurrentUser(onSuccessCallback) {
         this.setState({
             isLoading: true
         });
@@ -45,6 +59,7 @@ class App extends Component {
                 isAuthenticated: true,
                 isLoading: false
             });
+            onSuccessCallback();
         }).catch(error => {
             this.setState({
                 isLoading: false
@@ -58,7 +73,7 @@ class App extends Component {
                 <AppHeader
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    onLogout={this.handleLogout()}
+                    onLogout={this.handleLogout}
                 />
                 <Content className="app-content">
                         <Switch>
