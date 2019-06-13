@@ -15,6 +15,13 @@ import java.util.Set;
 @Table(name = "users")
 public class User extends DateAudit {
 
+    public User(String name, String username, String email, String password) {
+        this.name = name;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
     @Id
     @GeneratedValue
     private Long id;
@@ -25,19 +32,19 @@ public class User extends DateAudit {
 
     @NotBlank
     @NaturalId
-    @Size(max = 20)
     @Column(unique = true)
+    @Size(max = 20)
     private String username;
 
     @NotBlank
     @Email
     @NaturalId
-    @Size(max = 50)
     @Column(unique = true)
+    @Size(max = 50)
     private String email;
 
     @NotBlank
-    @Size(max = 20)
+    @Size(max = 255)
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)
