@@ -1,4 +1,5 @@
-export const API_BASE_URL = 'http://localhost:5000/api';
+let env = process.env.API_BASE_URL;
+export const API_BASE_URL = env;
 export const API_PROXY_URL = '/api';
 export const ACCESS_TOKEN = 'accessToken';
 export const NAME_MIN_LENGTH = 4;
