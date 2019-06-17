@@ -1,7 +1,5 @@
 require('dotenv').config();
-let env = process.env.API_BASE_URL;
-export const API_BASE_URL = env;
-export const API_PROXY_URL = '/api';
+export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 export const ACCESS_TOKEN = 'accessToken';
 export const NAME_MIN_LENGTH = 4;
 export const NAME_MAX_LENGTH = 40;
