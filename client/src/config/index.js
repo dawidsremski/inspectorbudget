@@ -1,3 +1,4 @@
+require('dotenv').config();
 let env = process.env.API_BASE_URL;
 export const API_BASE_URL = env;
 export const API_PROXY_URL = '/api';
