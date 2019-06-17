@@ -122,7 +122,7 @@ class SignUp extends Component {
                                     size="large"
                                     name="userName"
                                     autoComplete="off"
-                                    placeholder="A unique userName"
+                                    placeholder="A unique username"
                                     value={this.state.userName.value}
                                     onBlur={this.validateUsernameAvailability}
                                     onChange={(event) => this.handleInputChange(event, this.validateUsername)}/>
