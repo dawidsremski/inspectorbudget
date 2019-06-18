@@ -60,7 +60,7 @@ public class AuthenticationController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) throws Exception {
 
-        String reCAPTCHAResponse = signUpRequest.reCAPTCHAResponse;
+        String reCAPTCHAResponse = signUpRequest.getReCAPTCHAResponse();
         //TODO Make POST request to https://www.google.com/recaptcha/api/siteverify and verify reCAPTCHA
         Boolean reCAPTCHAVerificationResult = true;
         if (!reCAPTCHAVerificationResult) {
