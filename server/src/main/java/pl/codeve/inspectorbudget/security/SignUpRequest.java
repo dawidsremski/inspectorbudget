@@ -22,4 +22,6 @@ class SignUpRequest {
     @Size(max = 20)
     private String password;
     private Long avatarId;
+    @NotBlank
+    private String reCAPTCHAResponse;
 }

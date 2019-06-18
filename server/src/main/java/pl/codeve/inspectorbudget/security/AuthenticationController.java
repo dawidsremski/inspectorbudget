@@ -59,6 +59,15 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) throws Exception {
+
+        String reCAPTCHAResponse = signUpRequest.reCAPTCHAResponse;
+        //TODO Make POST request to https://www.google.com/recaptcha/api/siteverify and verify reCAPTCHA
+        Boolean reCAPTCHAVerificationResult = true;
+        if (!reCAPTCHAVerificationResult) {
+            return new ResponseEntity<>(new ApiResponse(false, "reCAPTCHA verification failed!"),
+                    HttpStatus.UNAUTHORIZED);
+        }
+
         if (userRepository.existsByUserName(signUpRequest.getUserName())) {
             return new ResponseEntity<>(new ApiResponse(false, "Username is already taken!"),
                     HttpStatus.BAD_REQUEST);
