@@ -3,14 +3,15 @@ import './SignUp.css';
 import {signUp, checkUsernameAvailability, checkEmailAvailability} from '../../util/APIUtils';
 import {Link, withRouter} from 'react-router-dom';
 import {
+    REACT_APP_RECAPTCHA_SITE_KEY,
     NAME_MIN_LENGTH, NAME_MAX_LENGTH,
     USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH,
     EMAIL_MAX_LENGTH,
     PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, API_BASE_URL
 } from '../../config/index';
-
 import {Form, Input, Button, notification, Col, Row} from 'antd';
 import AvatarInput from "../AvatarInput/AvatarInput";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const FormItem = Form.Item;
 
@@ -158,6 +159,12 @@ class SignUp extends Component {
                             <FormItem>
                                 <AvatarInput action={API_BASE_URL + "/user/avatar"}
                                              onChange={this.handleAvatarUpload}/>
+                            </FormItem>
+                            <FormItem>
+                                <ReCAPTCHA
+                                    sitekey={REACT_APP_RECAPTCHA_SITE_KEY}
+                                    onChange={console.log('Captcha!')}
+                                />
                             </FormItem>
                             <FormItem>
                                 <Button type="primary"

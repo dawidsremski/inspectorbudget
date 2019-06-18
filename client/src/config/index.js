@@ -1,5 +1,7 @@
 require('dotenv').config();
+console.log(process.env);
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+export const REACT_APP_RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
 export const ACCESS_TOKEN = 'accessToken';
 export const NAME_MIN_LENGTH = 4;
 export const NAME_MAX_LENGTH = 40;
