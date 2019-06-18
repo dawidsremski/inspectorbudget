@@ -1,5 +1,7 @@
 package pl.codeve.inspectorbudget.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,15 +13,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.codeve.inspectorbudget.common.ApiResponse;
-import pl.codeve.inspectorbudget.security.JwtAuthenticationResponse;
-import pl.codeve.inspectorbudget.security.LoginRequest;
-import pl.codeve.inspectorbudget.security.SignUpRequest;
+import pl.codeve.inspectorbudget.security.recaptcha.ReCAPTCHAVerificationResponse;
+import pl.codeve.inspectorbudget.security.recaptcha.ReCAPTCHAVerificationService;
 import pl.codeve.inspectorbudget.user.*;
 import pl.codeve.inspectorbudget.user.role.Role;
 import pl.codeve.inspectorbudget.user.role.RoleName;
 import pl.codeve.inspectorbudget.user.role.RoleRepository;
 import pl.codeve.inspectorbudget.user.UserRepository;
-import pl.codeve.inspectorbudget.security.JwtTokenProvider;
 import pl.codeve.inspectorbudget.storage.StorageService;
 import pl.codeve.inspectorbudget.user.avatar.Avatar;
 import pl.codeve.inspectorbudget.user.avatar.AvatarRepository;
@@ -40,6 +40,9 @@ public class AuthenticationController {
     private StorageService storageService;
     private PasswordEncoder passwordEncoder;
     private JwtTokenProvider tokenProvider;
+    private ReCAPTCHAVerificationService reCAPTCHAVerificationService;
+
+    private Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     AuthenticationController(AuthenticationManager authenticationManager,
                              UserRepository userRepository,
@@ -47,7 +50,8 @@ public class AuthenticationController {
                              AvatarRepository avatarRepository,
                              StorageService storageService,
                              PasswordEncoder passwordEncoder,
-                             JwtTokenProvider tokenProvider) {
+                             JwtTokenProvider tokenProvider,
+                             ReCAPTCHAVerificationService reCAPTCHAVerificationService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -55,17 +59,25 @@ public class AuthenticationController {
         this.storageService = storageService;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
+        this.reCAPTCHAVerificationService = reCAPTCHAVerificationService;
     }
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) throws Exception {
 
         String reCAPTCHAResponse = signUpRequest.getReCAPTCHAResponse();
-        //TODO Make POST request to https://www.google.com/recaptcha/api/siteverify and verify reCAPTCHA
-        Boolean reCAPTCHAVerificationResult = true;
-        if (!reCAPTCHAVerificationResult) {
-            return new ResponseEntity<>(new ApiResponse(false, "reCAPTCHA verification failed!"),
-                    HttpStatus.UNAUTHORIZED);
+        ResponseEntity<ReCAPTCHAVerificationResponse> reCAPTCHAVerificationEntity = reCAPTCHAVerificationService.verify(reCAPTCHAResponse);
+
+        if (reCAPTCHAVerificationEntity.getStatusCode().is2xxSuccessful()) {
+            if (!reCAPTCHAVerificationEntity.getBody().getSuccess()) {
+                return new ResponseEntity<>(new ApiResponse(false, "reCAPTCHA verification failed! You're unauthorized."),
+                        HttpStatus.UNAUTHORIZED);
+            }
+        } else {
+            logger.error("reCAPTCHA verification failed, due to network error with status code "
+                    + reCAPTCHAVerificationEntity.getStatusCodeValue() + "."
+                    + "Verification skipped when registering user with username: "
+                    + signUpRequest.getUserName() + "!");
         }
 
         if (userRepository.existsByUserName(signUpRequest.getUserName())) {

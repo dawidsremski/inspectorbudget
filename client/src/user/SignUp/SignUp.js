@@ -66,7 +66,7 @@ class SignUp extends Component {
             userName: this.state.userName.value,
             password: this.state.password.value,
             avatarId: this.state.avatarId,
-            reCaptchaResponse: this.state.reCAPTCHA.response
+            reCAPTCHAResponse: this.state.reCAPTCHA.response
         };
         signUp(signupRequest)
             .then(response => {
@@ -86,7 +86,7 @@ class SignUp extends Component {
     onReCAPTCHAChange(response, validationFun) {
         this.setState({
             reCAPTCHA: {
-                value: response,
+                response: response,
                 ...validationFun(response)
             }
         });

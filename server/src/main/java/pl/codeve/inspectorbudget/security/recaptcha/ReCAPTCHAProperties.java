@@ -11,4 +11,6 @@ public class ReCAPTCHAProperties {
 
     /** reCAPTCHA secret key */
     private String secretKey;
+    /** reCAPTCHA verification URL */
+    private String verificationURL;
 }
