@@ -30,10 +30,14 @@ class SignUp extends Component {
             },
             password: {
                 value: ''
+            },
+            reCAPTCHA: {
+                response: null
             }
         };
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.onReCAPTCHAChange = this.onReCAPTCHAChange.bind(this);
         this.validateUsernameAvailability = this.validateUsernameAvailability.bind(this);
         this.validateEmailAvailability = this.validateEmailAvailability.bind(this);
         this.isFormInvalid = this.isFormInvalid.bind(this);
@@ -61,7 +65,8 @@ class SignUp extends Component {
             email: this.state.email.value,
             userName: this.state.userName.value,
             password: this.state.password.value,
-            avatarId: this.state.avatarId
+            avatarId: this.state.avatarId,
+            reCaptchaResponse: this.state.reCAPTCHA.response
         };
         signUp(signupRequest)
             .then(response => {
@@ -78,11 +83,35 @@ class SignUp extends Component {
         });
     }
 
+    onReCAPTCHAChange(response, validationFun) {
+        this.setState({
+            reCAPTCHA: {
+                value: response,
+                ...validationFun(response)
+            }
+        });
+    }
+
+    validateReCAPTCHA = (response) => {
+        if (response !== null) {
+            return {
+                validateStatus: 'success',
+                errorMsg: null
+            }
+        } else {
+            return {
+                validateStatus: 'error',
+                errorMsg: 'Please validate that you\'re a human!'
+            }
+        }
+    };
+
     isFormInvalid() {
         return !(this.state.name.validateStatus === 'success' &&
             this.state.userName.validateStatus === 'success' &&
             this.state.email.validateStatus === 'success' &&
-            this.state.password.validateStatus === 'success'
+            this.state.password.validateStatus === 'success' &&
+            this.state.reCAPTCHA.validateStatus === 'success'
         );
     }
 
@@ -160,10 +189,13 @@ class SignUp extends Component {
                                 <AvatarInput action={API_BASE_URL + "/user/avatar"}
                                              onChange={this.handleAvatarUpload}/>
                             </FormItem>
-                            <FormItem>
+                            <FormItem
+                                validateStatus={this.state.reCAPTCHA.validateStatus}
+                                help={this.state.reCAPTCHA.errorMsg}>
                                 <ReCAPTCHA
+                                    ref="recaptcha"
                                     sitekey={REACT_APP_RECAPTCHA_SITE_KEY}
-                                    onChange={console.log('Captcha!')}
+                                    onChange={(response) => this.onReCAPTCHAChange(response, this.validateReCAPTCHA)}
                                 />
                             </FormItem>
                             <FormItem>
@@ -191,7 +223,7 @@ class SignUp extends Component {
             }
         } else if (name.length > NAME_MAX_LENGTH) {
             return {
-                validationStatus: 'error',
+                validateStatus: 'error',
                 errorMsg: `Name is too long (Maximum ${NAME_MAX_LENGTH} characters allowed.)`
             }
         } else {
@@ -239,7 +271,7 @@ class SignUp extends Component {
             }
         } else if (userName.length > USERNAME_MAX_LENGTH) {
             return {
-                validationStatus: 'error',
+                validateStatus: 'error',
                 errorMsg: `Username is too long (Maximum ${USERNAME_MAX_LENGTH} characters allowed.)`
             }
         } else {
@@ -370,7 +402,7 @@ class SignUp extends Component {
             }
         } else if (password.length > PASSWORD_MAX_LENGTH) {
             return {
-                validationStatus: 'error',
+                validateStatus: 'error',
                 errorMsg: `Password is too long (Maximum ${PASSWORD_MAX_LENGTH} characters allowed.)`
             }
         } else {
@@ -380,7 +412,6 @@ class SignUp extends Component {
             };
         }
     }
-
 }
 
 export default withRouter(SignUp);
