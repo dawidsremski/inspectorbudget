@@ -32,7 +32,7 @@ public class ScheduledTasks {
         int counter = 0;
         for (Avatar unusedAvatar : unusedAvatars) {
             if (unusedAvatar.getCreatedAt().isBefore(LocalDateTime.now()
-                    .minus(1, ChronoUnit.MINUTES))) {
+                    .minus(1, ChronoUnit.HOURS))) {
                 avatarService.delete(unusedAvatar);
                 counter++;
             }
