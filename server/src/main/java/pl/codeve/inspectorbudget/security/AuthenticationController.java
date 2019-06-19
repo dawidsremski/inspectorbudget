@@ -26,6 +26,7 @@ import pl.codeve.inspectorbudget.user.avatar.AvatarRepository;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -37,7 +38,6 @@ public class AuthenticationController {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private AvatarRepository avatarRepository;
-    private StorageService storageService;
     private PasswordEncoder passwordEncoder;
     private JwtTokenProvider tokenProvider;
     private ReCAPTCHAVerificationService reCAPTCHAVerificationService;
@@ -48,7 +48,6 @@ public class AuthenticationController {
                              UserRepository userRepository,
                              RoleRepository roleRepository,
                              AvatarRepository avatarRepository,
-                             StorageService storageService,
                              PasswordEncoder passwordEncoder,
                              JwtTokenProvider tokenProvider,
                              ReCAPTCHAVerificationService reCAPTCHAVerificationService) {
@@ -56,7 +55,6 @@ public class AuthenticationController {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.avatarRepository = avatarRepository;
-        this.storageService = storageService;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
         this.reCAPTCHAVerificationService = reCAPTCHAVerificationService;
@@ -94,7 +92,6 @@ public class AuthenticationController {
             return new ResponseEntity<>(new ApiResponse(false, "Email address already in use!"),
                     HttpStatus.BAD_REQUEST);
         }
-
         User user = new User(signUpRequest.getName(), signUpRequest.getUserName(),
                 signUpRequest.getEmail(), signUpRequest.getPassword());
 
@@ -114,14 +111,12 @@ public class AuthenticationController {
                 user.setAvatar(avatar);
             }
         }
-
         User result = userRepository.save(user);
 
         if (avatar != null) {
             avatar.setInUse(true);
             avatarRepository.save(avatar);
         }
-
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")
                 .buildAndExpand(result.getUserName()).toUri();
@@ -138,10 +133,15 @@ public class AuthenticationController {
                         loginRequest.getPassword()
                 )
         );
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         String jwt = tokenProvider.generateToken(authentication);
+
+        if (authentication.isAuthenticated()) {
+            String usernameOrEmail = loginRequest.getUsernameOrEmail();
+            User user = userRepository.findByUserNameOrEmail(usernameOrEmail, usernameOrEmail).get();
+            user.setLastLogin(LocalDateTime.now());
+            userRepository.save(user);
+        }
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 }
