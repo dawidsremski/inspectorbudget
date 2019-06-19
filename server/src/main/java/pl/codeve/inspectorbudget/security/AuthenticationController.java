@@ -98,14 +98,6 @@ public class AuthenticationController {
         User user = new User(signUpRequest.getName(), signUpRequest.getUserName(),
                 signUpRequest.getEmail(), signUpRequest.getPassword());
 
-        if (signUpRequest.getAvatarId() != null) {
-            Optional<Avatar> avatarOptional = this.avatarRepository.findById(signUpRequest.getAvatarId());
-            if (avatarOptional.isPresent()) {
-                Avatar avatar = avatarOptional.get();
-                user.setAvatar(avatar);
-            }
-        }
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
@@ -113,7 +105,22 @@ public class AuthenticationController {
 
         user.setRoles(Collections.singleton(userRole));
 
+        Avatar avatar = null;
+
+        if (signUpRequest.getAvatarId() != null) {
+            Optional<Avatar> avatarOptional = this.avatarRepository.findById(signUpRequest.getAvatarId());
+            if (avatarOptional.isPresent()) {
+                avatar = avatarOptional.get();
+                user.setAvatar(avatar);
+            }
+        }
+
         User result = userRepository.save(user);
+
+        if (avatar != null) {
+            avatar.setInUse(true);
+            avatarRepository.save(avatar);
+        }
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")

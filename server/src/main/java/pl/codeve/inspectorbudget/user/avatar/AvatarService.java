@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Base64;
+import java.util.List;
 
 @Service
 public class AvatarService {
@@ -50,5 +51,13 @@ public class AvatarService {
         Avatar avatar = avatarRepository.findById(avatarId).orElseThrow(AvatarNotFoundException::new);
         user.setAvatar(avatar);
         userRepository.save(user);
+    }
+
+    public List<Avatar> findAllByInUse(boolean inUse) {
+        return avatarRepository.findAllByInUse(inUse);
+    }
+
+    public void delete(Avatar avatar) {
+        avatarRepository.delete(avatar);
     }
 }
