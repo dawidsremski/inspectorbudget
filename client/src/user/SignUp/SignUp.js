@@ -1,17 +1,17 @@
 import React, {Component} from 'react';
+import {Link, withRouter} from 'react-router-dom';
 import './SignUp.css';
 import {signUp, checkUsernameAvailability, checkEmailAvailability} from '../../util/APIUtils';
-import {Link, withRouter} from 'react-router-dom';
+import {Form, Input, Button, notification, Col, Row} from 'antd';
+import AvatarInput from "../AvatarInput/AvatarInput";
+import ReCAPTCHA from "react-google-recaptcha";
 import {
-    REACT_APP_RECAPTCHA_SITE_KEY,
+    RECAPTCHA_SITE_KEY,
     NAME_MIN_LENGTH, NAME_MAX_LENGTH,
     USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH,
     EMAIL_MAX_LENGTH,
     PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, API_BASE_URL
 } from '../../config/index';
-import {Form, Input, Button, notification, Col, Row} from 'antd';
-import AvatarInput from "../AvatarInput/AvatarInput";
-import ReCAPTCHA from "react-google-recaptcha";
 
 const FormItem = Form.Item;
 
@@ -31,6 +31,9 @@ class SignUp extends Component {
             password: {
                 value: ''
             },
+            repeatedPassword: {
+                value: ''
+            },
             reCAPTCHA: {
                 response: null
             }
@@ -43,6 +46,25 @@ class SignUp extends Component {
         this.isFormInvalid = this.isFormInvalid.bind(this);
         this.handleAvatarUpload = this.handleAvatarUpload.bind(this);
     }
+
+    validateName = (name) => {
+        if (name.length < NAME_MIN_LENGTH) {
+            return {
+                validateStatus: 'error',
+                errorMsg: `Name is too short (minimum ${NAME_MIN_LENGTH} characters needed)`
+            }
+        } else if (name.length > NAME_MAX_LENGTH) {
+            return {
+                validateStatus: 'error',
+                errorMsg: `Name is too long (maximum ${NAME_MAX_LENGTH} characters allowed)`
+            }
+        } else {
+            return {
+                validateStatus: 'success',
+                errorMsg: null,
+            };
+        }
+    };
 
     handleInputChange(event, validationFun) {
         const target = event.target;
@@ -65,6 +87,7 @@ class SignUp extends Component {
             email: this.state.email.value,
             userName: this.state.userName.value,
             password: this.state.password.value,
+            repeatedPassword: this.state.repeatedPassword.value,
             avatarId: this.state.avatarId,
             reCAPTCHAResponse: this.state.reCAPTCHA.response
         };
@@ -81,6 +104,12 @@ class SignUp extends Component {
                 description: error.message || 'Sorry! Something went wrong. Please try again!'
             });
         });
+    }
+
+    handleAvatarUpload(avatarId) {
+        this.setState({
+            avatarId: avatarId
+        })
     }
 
     onReCAPTCHAChange(response, validationFun) {
@@ -101,7 +130,7 @@ class SignUp extends Component {
         } else {
             return {
                 validateStatus: 'error',
-                errorMsg: 'Please validate that you\'re a human!'
+                errorMsg: null
             }
         }
     };
@@ -111,128 +140,10 @@ class SignUp extends Component {
             this.state.userName.validateStatus === 'success' &&
             this.state.email.validateStatus === 'success' &&
             this.state.password.validateStatus === 'success' &&
+            this.state.repeatedPassword.validateStatus === 'success' &&
             this.state.reCAPTCHA.validateStatus === 'success'
         );
     }
-
-    handleAvatarUpload(avatarId) {
-        this.setState({
-            avatarId: avatarId
-        })
-    }
-
-    render() {
-        return (
-            <Row className="content-container">
-                <Col xl={{span: 8, offset: 8}}
-                     md={{span: 12, offset: 6}}
-                     sm={{span: 20, offset: 2}}
-                     xs={{span: 24}}
-                     className="sign-up-box">
-                    <h1 className="page-title">Sign up</h1>
-                    <div className="sign-up-content">
-                        <Form onSubmit={this.handleSubmit} className="sign-up-form">
-                            <FormItem
-                                label="Full name"
-                                validateStatus={this.state.name.validateStatus}
-                                help={this.state.name.errorMsg}>
-                                <Input
-                                    size="large"
-                                    name="name"
-                                    autoComplete="off"
-                                    placeholder="Your full name"
-                                    value={this.state.name.value}
-                                    onChange={(event) => this.handleInputChange(event, this.validateName)}/>
-                            </FormItem>
-                            <FormItem label="Username"
-                                      hasFeedback
-                                      validateStatus={this.state.userName.validateStatus}
-                                      help={this.state.userName.errorMsg}>
-                                <Input
-                                    size="large"
-                                    name="userName"
-                                    autoComplete="off"
-                                    placeholder="A unique username"
-                                    value={this.state.userName.value}
-                                    onBlur={this.validateUsernameAvailability}
-                                    onChange={(event) => this.handleInputChange(event, this.validateUsername)}/>
-                            </FormItem>
-                            <FormItem
-                                label="Email"
-                                hasFeedback
-                                validateStatus={this.state.email.validateStatus}
-                                help={this.state.email.errorMsg}>
-                                <Input
-                                    size="large"
-                                    name="email"
-                                    type="email"
-                                    autoComplete="off"
-                                    placeholder="Your email"
-                                    value={this.state.email.value}
-                                    onBlur={this.validateEmailAvailability}
-                                    onChange={(event) => this.handleInputChange(event, this.validateEmail)}/>
-                            </FormItem>
-                            <FormItem
-                                label="Password"
-                                validateStatus={this.state.password.validateStatus}
-                                help={this.state.password.errorMsg}>
-                                <Input
-                                    size="large"
-                                    name="password"
-                                    type="password"
-                                    autoComplete="off"
-                                    placeholder="A password between 6 to 20 characters"
-                                    value={this.state.password.value}
-                                    onChange={(event) => this.handleInputChange(event, this.validatePassword)}/>
-                            </FormItem>
-                            <FormItem>
-                                <AvatarInput action={API_BASE_URL + "/user/avatar"}
-                                             onChange={this.handleAvatarUpload}/>
-                            </FormItem>
-                            <FormItem
-                                validateStatus={this.state.reCAPTCHA.validateStatus}
-                                help={this.state.reCAPTCHA.errorMsg}>
-                                <ReCAPTCHA
-                                    ref="recaptcha"
-                                    sitekey={REACT_APP_RECAPTCHA_SITE_KEY}
-                                    onChange={(response) => this.onReCAPTCHAChange(response, this.validateReCAPTCHA)}
-                                />
-                            </FormItem>
-                            <FormItem>
-                                <Button type="primary"
-                                        htmlType="submit"
-                                        size="large"
-                                        className="sign-up-form-button"
-                                        disabled={this.isFormInvalid()}>
-                                    Sign up
-                                </Button>
-                                Already registered? <Link to="/login">Login now!</Link>
-                            </FormItem>
-                        </Form>
-                    </div>
-                </Col>
-            </Row>
-        );
-    }
-
-    validateName = (name) => {
-        if (name.length < NAME_MIN_LENGTH) {
-            return {
-                validateStatus: 'error',
-                errorMsg: `Name is too short (Minimum ${NAME_MIN_LENGTH} characters needed.)`
-            }
-        } else if (name.length > NAME_MAX_LENGTH) {
-            return {
-                validateStatus: 'error',
-                errorMsg: `Name is too long (Maximum ${NAME_MAX_LENGTH} characters allowed.)`
-            }
-        } else {
-            return {
-                validateStatus: 'success',
-                errorMsg: null,
-            };
-        }
-    };
 
     validateEmail = (email) => {
         if (!email) {
@@ -246,14 +157,14 @@ class SignUp extends Component {
         if (!EMAIL_REGEX.test(email)) {
             return {
                 validateStatus: 'error',
-                errorMsg: 'Email not valid'
+                errorMsg: 'Email is not valid'
             }
         }
 
         if (email.length > EMAIL_MAX_LENGTH) {
             return {
                 validateStatus: 'error',
-                errorMsg: `Email is too long (Maximum ${EMAIL_MAX_LENGTH} characters allowed)`
+                errorMsg: `Email is too long (maximum ${EMAIL_MAX_LENGTH} characters allowed)`
             }
         }
 
@@ -267,12 +178,12 @@ class SignUp extends Component {
         if (userName.length < USERNAME_MIN_LENGTH) {
             return {
                 validateStatus: 'error',
-                errorMsg: `Username is too short (Minimum ${USERNAME_MIN_LENGTH} characters needed.)`
+                errorMsg: `Username is too short (minimum ${USERNAME_MIN_LENGTH} characters needed)`
             }
         } else if (userName.length > USERNAME_MAX_LENGTH) {
             return {
                 validateStatus: 'error',
-                errorMsg: `Username is too long (Maximum ${USERNAME_MAX_LENGTH} characters allowed.)`
+                errorMsg: `Username is too long (maximum ${USERNAME_MAX_LENGTH} characters allowed)`
             }
         } else {
             return {
@@ -375,7 +286,7 @@ class SignUp extends Component {
                         email: {
                             value: emailValue,
                             validateStatus: 'error',
-                            errorMsg: 'This Email is already registered'
+                            errorMsg: 'This email is already registered'
                         }
                     });
                 }
@@ -395,22 +306,171 @@ class SignUp extends Component {
     }
 
     validatePassword = (password) => {
+        let result = {};
         if (password.length < PASSWORD_MIN_LENGTH) {
-            return {
+            result = {
                 validateStatus: 'error',
-                errorMsg: `Password is too short (Minimum ${PASSWORD_MIN_LENGTH} characters needed.)`
+                errorMsg: `Password is too short (minimum ${PASSWORD_MIN_LENGTH} characters needed)`
             }
         } else if (password.length > PASSWORD_MAX_LENGTH) {
-            return {
+            result = {
                 validateStatus: 'error',
-                errorMsg: `Password is too long (Maximum ${PASSWORD_MAX_LENGTH} characters allowed.)`
+                errorMsg: `Password is too long (maximum ${PASSWORD_MAX_LENGTH} characters allowed)`
             }
         } else {
-            return {
+            result = {
                 validateStatus: 'success',
                 errorMsg: null,
             };
         }
+        if (this.state.repeatedPassword.value !== '' && this.state.repeatedPassword.value !== password) {
+            this.setState({
+                repeatedPassword: {
+                    validateStatus: 'error',
+                    errorMsg: 'The passwords you entered don\'t match!',
+                    value: this.state.repeatedPassword.value
+                }
+            });
+        } else {
+            this.setState({
+                repeatedPassword: {
+                    validateStatus: 'success',
+                    errorMsg: null,
+                    value: this.state.repeatedPassword.value
+                }
+            });
+        }
+        return result;
+    };
+
+    validateRepeatedPassword = (repeatedPassword) => {
+        if (this.state.password.value !== repeatedPassword) {
+            return {
+                validateStatus: 'error',
+                errorMsg: 'The passwords you entered don\'t match!'
+            }
+        } else return {
+            validateStatus: 'success',
+            errorMsg: null
+        }
+    };
+
+    render() {
+        return (
+            <Row className="content-container">
+                <Col xl={{span: 8, offset: 8}}
+                     md={{span: 12, offset: 6}}
+                     sm={{span: 20, offset: 2}}
+                     xs={{span: 24}}
+                     className="sign-up-box">
+                    <h1 className="page-title">Sign up</h1>
+                    <div className="sign-up-content">
+                        <Form onSubmit={this.handleSubmit} className="sign-up-form">
+                            <FormItem
+                                required
+                                label="Full name"
+                                hasFeedback
+                                validateStatus={this.state.name.validateStatus}
+                                help={this.state.name.errorMsg}>
+                                <Input
+                                    size="large"
+                                    name="name"
+                                    autoComplete="off"
+                                    placeholder="Your full name"
+                                    value={this.state.name.value}
+                                    onChange={(event) => this.handleInputChange(event, this.validateName)}/>
+                            </FormItem>
+                            <FormItem
+                                required
+                                label="Username"
+                                hasFeedback
+                                validateStatus={this.state.userName.validateStatus}
+                                help={this.state.userName.errorMsg}>
+                                <Input
+                                    size="large"
+                                    name="userName"
+                                    autoComplete="off"
+                                    placeholder="A unique username"
+                                    value={this.state.userName.value}
+                                    onBlur={this.validateUsernameAvailability}
+                                    onChange={(event) => this.handleInputChange(event, this.validateUsername)}/>
+                            </FormItem>
+                            <FormItem
+                                required
+                                label="Email"
+                                hasFeedback
+                                validateStatus={this.state.email.validateStatus}
+                                help={this.state.email.errorMsg}>
+                                <Input
+                                    size="large"
+                                    name="email"
+                                    type="email"
+                                    autoComplete="off"
+                                    placeholder="Your email"
+                                    value={this.state.email.value}
+                                    onBlur={this.validateEmailAvailability}
+                                    onChange={(event) => this.handleInputChange(event, this.validateEmail)}/>
+                            </FormItem>
+                            <FormItem
+                                required
+                                label="Password"
+                                validateStatus={this.state.password.validateStatus}
+                                help={this.state.password.errorMsg}>
+                                <Input
+                                    size="large"
+                                    name="password"
+                                    type="password"
+                                    autoComplete="off"
+                                    placeholder={`A password between ${PASSWORD_MIN_LENGTH} to ${PASSWORD_MAX_LENGTH} characters`}
+                                    value={this.state.password.value}
+                                    onChange={(event) => this.handleInputChange(event, this.validatePassword)}/>
+                            </FormItem>
+                            <FormItem
+                                className="repeated-password-form-item"
+                                required
+                                label="Repeat password"
+                                validateStatus={this.state.repeatedPassword.validateStatus}
+                                help={this.state.repeatedPassword.errorMsg}>
+                                <Input
+                                    size="large"
+                                    name="repeatedPassword"
+                                    type="password"
+                                    autoComplete="off"
+                                    placeholder="Repeated password"
+                                    value={this.state.repeatedPassword.value}
+                                    onChange={(event) => this.handleInputChange(event, this.validateRepeatedPassword)}/>
+                            </FormItem>
+                            <FormItem
+                                className="avatar-form-item">
+                                <AvatarInput action={API_BASE_URL + "/user/avatar"}
+                                             onChange={this.handleAvatarUpload}/>
+                            </FormItem>
+                            <FormItem
+                                required
+                                label="Please prove that you're a human"
+                                validateStatus={this.state.reCAPTCHA.validateStatus}
+                                help={this.state.reCAPTCHA.errorMsg}>
+                                <ReCAPTCHA
+                                    ref="recaptcha"
+                                    sitekey={RECAPTCHA_SITE_KEY}
+                                    onChange={(response) => this.onReCAPTCHAChange(response, this.validateReCAPTCHA)}
+                                />
+                            </FormItem>
+                            <FormItem>
+                                <Button type="primary"
+                                        htmlType="submit"
+                                        size="large"
+                                        className="sign-up-form-button"
+                                        disabled={this.isFormInvalid()}>
+                                    Sign up
+                                </Button>
+                                Already registered? <Link to="/login">Login now!</Link>
+                            </FormItem>
+                        </Form>
+                    </div>
+                </Col>
+            </Row>
+        );
     }
 }
 

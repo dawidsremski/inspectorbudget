@@ -1,7 +1,20 @@
 .sign-up-form-button {
     margin-right: 25px;
 }
+
 .sign-up-box {
     background: #fff;
     padding: 25px;
+}
+
+.avatar-form-item {
+    margin-bottom: 12px;
+}
+
+.avatar-uploader .ant-upload.ant-upload-select-picture-card {
+    margin: 0;
+}
+
+.ant-row.ant-form-item.ant-form-item-with-help.repeated-password-form-item {
+    margin-bottom: 24px;
 }

@@ -1,6 +1,6 @@
-import React from "react";
+import React, {Component} from "react";
 import {Upload, Icon, message } from "antd";
-import {API_BASE_URL} from "../../config";
+import {API_BASE_URL, MAX_AVATAR_UPLOAD_SIZE} from "../../config";
 import './AvatarInput.css';
 
 function beforeUpload(file) {
@@ -8,14 +8,14 @@ function beforeUpload(file) {
     if (!isJPG) {
         message.error('You can only use jpeg file as an avatar!');
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-        message.error('File must smaller than 2MB!');
+    const isSizeCorrect = file.size / 1024 / 1024 < MAX_AVATAR_UPLOAD_SIZE;
+    if (!isSizeCorrect) {
+        message.error(`File must be smaller than ${MAX_AVATAR_UPLOAD_SIZE}MB!`);
     }
-    return isJPG && isLt2M;
+    return isJPG && isSizeCorrect;
 }
 
-class AvatarInput extends React.Component {
+class AvatarInput extends Component {
     state = {
         loading: false,
     };
@@ -26,7 +26,6 @@ class AvatarInput extends React.Component {
             return;
         }
         if (info.file.status === 'done') {
-            // Get this url from response in real world.
             console.log(info);
             this.setState({
                 imageUrl: API_BASE_URL + info.file.response.avatarUrl,

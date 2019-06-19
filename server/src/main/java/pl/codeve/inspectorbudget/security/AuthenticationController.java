@@ -80,6 +80,11 @@ public class AuthenticationController {
                     + signUpRequest.getUserName() + "!");
         }
 
+        if (!signUpRequest.getPassword().equals(signUpRequest.getRepeatedPassword())) {
+            return new ResponseEntity<>(new ApiResponse(false, "The passwords you entered don\'t match!"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
         if (userRepository.existsByUserName(signUpRequest.getUserName())) {
             return new ResponseEntity<>(new ApiResponse(false, "Username is already taken!"),
                     HttpStatus.BAD_REQUEST);
