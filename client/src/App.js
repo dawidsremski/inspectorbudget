@@ -7,7 +7,6 @@ import {Route, Switch, withRouter} from "react-router-dom";
 import {getCurrentUser} from "./util/APIUtils";
 import SignUp from "./user/SignUp/SignUp";
 import {ACCESS_TOKEN} from "./config/index";
-const { Content } = Layout;
 
 class App extends Component {
     constructor(props) {
@@ -75,7 +74,7 @@ class App extends Component {
                     currentUser={this.state.currentUser}
                     onLogout={this.handleLogout}
                 />
-                <Content className="app-content">
+                <Layout className="app-content">
                         <Switch>
                             <Route path="/login" render={(props) =>
                                 <Login onLogin={this.handleLogin} {...props} />}
@@ -86,7 +85,7 @@ class App extends Component {
                                 <SignUp />}
                                 />
                         </Switch>
-                </Content>
+                </Layout>
             </Layout>
         );
     }

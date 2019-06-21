@@ -1,0 +1,34 @@
+.menu-item-right {
+    float: right;
+}
+
+i.anticon.anticon-user {
+    margin: 0px;
+}
+
+.submenu-title-wrapper .ant-avatar {
+    margin-right: 10px;
+}
+
+.ant-scroll-number.ant-badge-count {
+    left: -20px;
+    right: auto;
+}
+
+
+.profile-dropdown-info {
+    margin: 4px 0 8px 0;
+    padding: 0 16px;
+}
+
+.info-name {
+    line-height: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.info-username {
+    line-height: 16px;
+    font-size: 16px;
+}

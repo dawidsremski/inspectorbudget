@@ -43,7 +43,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<?> getCurrentUser(@CurrentUser UserPrincipal currentUser) {
         UserResponse userResponse = new UserResponse(currentUser.getId(), currentUser.getName(), currentUser.getUsername(), currentUser.getEmail());
-        if (currentUser.getAvatar() != null) userResponse.setAvatarURL("api/user/avatar?id=" + currentUser.getAvatar().getId());
+        if (currentUser.getAvatar() != null) userResponse.setAvatarURL("/user/avatar?id=" + currentUser.getAvatar().getId());
         return new ResponseEntity<>(userResponse,HttpStatus.OK);
     }
 }
