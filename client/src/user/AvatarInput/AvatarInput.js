@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Upload, Icon, message } from "antd";
+import {Upload, Icon, message} from "antd";
 import {API_BASE_URL, MAX_AVATAR_UPLOAD_SIZE} from "../../config";
 import './AvatarInput.css';
 
@@ -20,13 +20,28 @@ class AvatarInput extends Component {
         loading: false,
     };
 
+    componentDidMount() {
+        if (this.props.currentId !== null) {
+            this.setState({
+                imageUrl: API_BASE_URL + `/user/avatar?id=${this.props.currentId}`
+            });
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.currentId !== prevProps.currentId && this.props.currentId !== null) {
+            this.setState({
+                imageUrl: API_BASE_URL + `/user/avatar?id=${this.props.currentId}`
+            });
+        }
+    }
+
     handleChange = info => {
         if (info.file.status === 'uploading') {
             this.setState({loading: true});
             return;
         }
         if (info.file.status === 'done') {
-            console.log(info);
             this.setState({
                 imageUrl: API_BASE_URL + info.file.response.avatarUrl,
                 loading: false,
@@ -52,7 +67,7 @@ class AvatarInput extends Component {
                 action={this.props.action}
                 beforeUpload={beforeUpload}
                 onChange={this.handleChange}>
-                {imageUrl ? <img className="avatar-img-circle" src={imageUrl} alt="avatar" /> : uploadButton}
+                {imageUrl ? <img className="avatar-img-circle" src={imageUrl} alt="avatar"/> : uploadButton}
             </Upload>
         );
     }

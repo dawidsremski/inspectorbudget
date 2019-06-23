@@ -17,5 +17,5 @@ class UserResponse {
     private String userName;
     @NonNull
     private String email;
-    private String avatarURL;
+    private Long avatarId;
 }

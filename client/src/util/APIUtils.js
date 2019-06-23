@@ -5,7 +5,7 @@ const request = (options) => {
         'Content-Type': 'application/json',
     });
 
-    if(localStorage.getItem(ACCESS_TOKEN)) {
+    if (localStorage.getItem(ACCESS_TOKEN)) {
         headers.append('Authorization', 'Bearer ' + localStorage.getItem(ACCESS_TOKEN))
     }
 
@@ -15,7 +15,7 @@ const request = (options) => {
     return fetch(options.url, options)
         .then(response =>
             response.json().then(json => {
-                if(!response.ok) {
+                if (!response.ok) {
                     return Promise.reject(json);
                 }
                 return json;
@@ -32,7 +32,7 @@ export function login(loginRequest) {
 }
 
 export function getCurrentUser() {
-    if(!localStorage.getItem(ACCESS_TOKEN)) {
+    if (!localStorage.getItem(ACCESS_TOKEN)) {
         return Promise.reject("No access token set.");
     }
 
@@ -48,6 +48,14 @@ export function signUp(signupRequest) {
         method: 'POST',
         body: JSON.stringify(signupRequest)
     })
+}
+
+export function editProfile(editProfileRequest) {
+    return request({
+        url: API_BASE_URL + "/user",
+        method: 'PATCH',
+        body: JSON.stringify(editProfileRequest)
+    });
 }
 
 export function checkUsernameAvailability(username) {

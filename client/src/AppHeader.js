@@ -22,7 +22,10 @@ class AppHeader extends Component {
                          title={
                              <span className="submenu-title-wrapper">
                                  <Avatar icon="user"
-                                         src={(this.props.currentUser.avatarURL !== null) ? API_BASE_URL + this.props.currentUser.avatarURL : ""}/>
+                                         src={(this.props.currentUser.avatarId !== null) ?
+                                             API_BASE_URL
+                                             + '/user/avatar?id='
+                                             + this.props.currentUser.avatarId : ""}/>
                                     Profile
                              </span>
                          }>

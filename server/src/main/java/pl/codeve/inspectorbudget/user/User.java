@@ -51,7 +51,6 @@ public class User extends DateAudit {
 
     @NotBlank
     @Email
-    @NaturalId
     @Column(unique = true)
     @Size(max = 50)
     @NonNull

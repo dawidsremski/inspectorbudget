@@ -121,7 +121,7 @@ public class AuthenticationController {
                 .fromCurrentContextPath().path("/api/users/{username}")
                 .buildAndExpand(result.getUserName()).toUri();
 
-        return ResponseEntity.created(location).body(new ApiResponse(true, "user registered successfully."));
+        return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully."));
     }
 
     @PostMapping("/login")
