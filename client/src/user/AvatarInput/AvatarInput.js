@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Upload, Icon, message} from "antd";
+import {Upload, Icon, message, Button} from "antd";
 import {API_BASE_URL, MAX_AVATAR_UPLOAD_SIZE} from "../../config";
 import './AvatarInput.css';
 
@@ -29,9 +29,10 @@ class AvatarInput extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.currentId !== prevProps.currentId && this.props.currentId !== null) {
+        if (this.props.currentId !== prevProps.currentId) {
             this.setState({
-                imageUrl: API_BASE_URL + `/user/avatar?id=${this.props.currentId}`
+                imageUrl: (this.props.currentId !== null) ?
+                    API_BASE_URL + `/user/avatar?id=${this.props.currentId}` : ''
             });
         }
     }
@@ -59,16 +60,32 @@ class AvatarInput extends Component {
         );
         const imageUrl = this.state.imageUrl;
         return (
-            <Upload
-                name="file"
-                listType="picture-card"
-                className="avatar-uploader"
-                showUploadList={false}
-                action={this.props.action}
-                beforeUpload={beforeUpload}
-                onChange={this.handleChange}>
-                {imageUrl ? <img className="avatar-img-circle" src={imageUrl} alt="avatar"/> : uploadButton}
-            </Upload>
+            <div style={{
+                position: 'relative',
+                height: '102px',
+                width: '102px'
+            }}>
+                <Button className="remove-avatar-button"
+                        type="danger"
+                        shape="circle"
+                        size="small"
+                        onClick={() => this.props.onRemove()}
+                        icon="close"
+                        style={{
+                            display: (this.props.currentId !== null)? 'block' : 'none'
+                        }}>
+                </Button>
+                <Upload
+                    name="file"
+                    listType="picture-card"
+                    className="avatar-uploader"
+                    showUploadList={false}
+                    action={this.props.action}
+                    beforeUpload={beforeUpload}
+                    onChange={this.handleChange}>
+                    {imageUrl ? <img className="avatar-img-circle" src={imageUrl} alt="avatar"/> : uploadButton}
+                </Upload>
+            </div>
         );
     }
 }

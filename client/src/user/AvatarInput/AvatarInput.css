@@ -7,3 +7,13 @@
 .ant-upload {
     border-radius: 50% !important;
 }
+
+.remove-avatar-button {
+    width: 20px !important;
+    height: 20px !important;
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    font-size: 12px !important;
+    z-index: 100;
+}

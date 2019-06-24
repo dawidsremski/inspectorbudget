@@ -64,22 +64,32 @@ public class UserController {
             user.setEmail(editProfileRequest.getEmail());
         }
 
+        Avatar oldAvatar = null;
+
         if (editProfileRequest.getAvatarId() != null) {
 
             if (user.getAvatar() != null) {
-                Avatar oldAvatar = user.getAvatar();
-                oldAvatar.setInUse(false);
-                avatarRepository.save(oldAvatar);
+                oldAvatar = user.getAvatar();
+                if (!oldAvatar.getId().equals(editProfileRequest.getAvatarId())) {
+                    oldAvatar.setInUse(false);
+                    avatarRepository.save(oldAvatar);
+                }
             }
-
-            Avatar avatar = avatarRepository.getOne(editProfileRequest.getAvatarId());
-            user.setAvatar(avatar);
-            avatar.setInUse(true);
-            avatarRepository.save(avatar);
+            if (oldAvatar == null || !oldAvatar.getId().equals(editProfileRequest.getAvatarId())) {
+                Avatar avatar = avatarRepository.getOne(editProfileRequest.getAvatarId());
+                user.setAvatar(avatar);
+                avatar.setInUse(true);
+                avatarRepository.save(avatar);
+            }
+        } else if (user.getAvatar() != null) {
+            oldAvatar = user.getAvatar();
+            oldAvatar.setInUse(false);
+            avatarRepository.save(oldAvatar);
+            user.setAvatar(null);
         }
 
         userRepository.save(user);
-        return new ResponseEntity<>(new ApiResponse(true,"Changes successfully saved."), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(true, "Changes successfully saved."), HttpStatus.OK);
     }
 }
 

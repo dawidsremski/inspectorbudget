@@ -44,6 +44,7 @@ class EditProfile extends Component {
         this.validateEmailAvailability = this.validateEmailAvailability.bind(this);
         this.isFormInvalid = this.isFormInvalid.bind(this);
         this.handleAvatarUpload = this.handleAvatarUpload.bind(this);
+        this.handleAvatarRemove = this.handleAvatarRemove.bind(this);
     }
 
     componentDidMount() {
@@ -154,6 +155,14 @@ class EditProfile extends Component {
             avatarId: {
                 value: avatarId,
                 validateStatus: 'success'
+            }
+        });
+    }
+
+    handleAvatarRemove() {
+        this.setState({
+            avatarId: {
+                value: null
             }
         });
     }
@@ -363,36 +372,37 @@ class EditProfile extends Component {
                                     onChange={(event) => this.handleInputChange(event, this.validateEmail)}/>
                             </FormItem>
                             {/*<FormItem*/}
-                                {/*label="Password"*/}
-                                {/*validateStatus={this.state.password.validateStatus}*/}
-                                {/*help={this.state.password.errorMsg}>*/}
-                                {/*<Input*/}
-                                    {/*size="large"*/}
-                                    {/*name="password"*/}
-                                    {/*type="password"*/}
-                                    {/*autoComplete="off"*/}
-                                    {/*placeholder={`A password between ${PASSWORD_MIN_LENGTH} to ${PASSWORD_MAX_LENGTH} characters`}*/}
-                                    {/*value={this.state.password.value}*/}
-                                    {/*onChange={(event) => this.handleInputChange(event, this.validatePassword)}/>*/}
+                            {/*label="Password"*/}
+                            {/*validateStatus={this.state.password.validateStatus}*/}
+                            {/*help={this.state.password.errorMsg}>*/}
+                            {/*<Input*/}
+                            {/*size="large"*/}
+                            {/*name="password"*/}
+                            {/*type="password"*/}
+                            {/*autoComplete="off"*/}
+                            {/*placeholder={`A password between ${PASSWORD_MIN_LENGTH} to ${PASSWORD_MAX_LENGTH} characters`}*/}
+                            {/*value={this.state.password.value}*/}
+                            {/*onChange={(event) => this.handleInputChange(event, this.validatePassword)}/>*/}
                             {/*</FormItem>*/}
                             {/*<FormItem*/}
-                                {/*className="repeated-password-form-item"*/}
-                                {/*label="Repeat password"*/}
-                                {/*validateStatus={this.state.repeatedPassword.validateStatus}*/}
-                                {/*help={this.state.repeatedPassword.errorMsg}>*/}
-                                {/*<Input*/}
-                                    {/*size="large"*/}
-                                    {/*name="repeatedPassword"*/}
-                                    {/*type="password"*/}
-                                    {/*autoComplete="off"*/}
-                                    {/*placeholder="Repeated password"*/}
-                                    {/*value={this.state.repeatedPassword.value}*/}
-                                    {/*onChange={(event) => this.handleInputChange(event, this.validateRepeatedPassword)}/>*/}
+                            {/*className="repeated-password-form-item"*/}
+                            {/*label="Repeat password"*/}
+                            {/*validateStatus={this.state.repeatedPassword.validateStatus}*/}
+                            {/*help={this.state.repeatedPassword.errorMsg}>*/}
+                            {/*<Input*/}
+                            {/*size="large"*/}
+                            {/*name="repeatedPassword"*/}
+                            {/*type="password"*/}
+                            {/*autoComplete="off"*/}
+                            {/*placeholder="Repeated password"*/}
+                            {/*value={this.state.repeatedPassword.value}*/}
+                            {/*onChange={(event) => this.handleInputChange(event, this.validateRepeatedPassword)}/>*/}
                             {/*</FormItem>*/}
                             <FormItem
                                 className="avatar-form-item">
                                 <AvatarInput action={API_BASE_URL + "/user/avatar"}
                                              onChange={this.handleAvatarUpload}
+                                             onRemove={this.handleAvatarRemove}
                                              currentId={this.state.avatarId.value}/>
                             </FormItem>
                             <FormItem>
