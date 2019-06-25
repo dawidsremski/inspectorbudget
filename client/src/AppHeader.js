@@ -4,6 +4,7 @@ import {Link, withRouter} from "react-router-dom";
 import './AppHeader.css';
 import SubMenu from "antd/lib/menu/SubMenu";
 import {API_BASE_URL} from "./config";
+import {getInitials} from "./util/Utils";
 
 const Header = Layout.Header;
 
@@ -22,11 +23,14 @@ class AppHeader extends Component {
                          trigger={['click']}
                          title={
                              <span className="submenu-title-wrapper">
-                                 <Avatar icon="user"
+                                 <Avatar
                                          src={(this.props.currentUser.avatarId !== null) ?
                                              API_BASE_URL
                                              + '/user/avatar?id='
-                                             + this.props.currentUser.avatarId : ""}/>
+                                             + this.props.currentUser.avatarId : ""}>
+                                     {getInitials(this.props.currentUser.name)}
+                                 </Avatar>
+
                                     Profile
                              </span>
                          }>
@@ -74,7 +78,7 @@ class AppHeader extends Component {
         );
     }
 
-    adminMenu() {
+    adminMenu = () => {
         if (this.props.currentUser.roles.includes("ROLE_ADMIN")) {
             return ([
                 <Menu.Item key="/admin/users">
@@ -85,7 +89,7 @@ class AppHeader extends Component {
                 </Menu.Item>
             ])
         }
-    }
+    };
 }
 
 export default withRouter(AppHeader);

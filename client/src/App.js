@@ -17,16 +17,13 @@ class App extends Component {
             isAuthenticated: false,
             isLoading: false
         };
-        this.handleLogin = this.handleLogin.bind(this);
-        this.handleLogout = this.handleLogout.bind(this);
-        this.loadCurrentUser = this.loadCurrentUser.bind(this);
     }
 
     componentDidMount() {
         this.loadCurrentUser();
     }
 
-    handleLogin() {
+    handleLogin = () => {
         this.loadCurrentUser(() => {
             notification.success({
                 message: "You're successfully logged in.",
@@ -34,9 +31,9 @@ class App extends Component {
             });
             this.props.history.push("/");
         });
-    }
+    };
 
-    handleLogout() {
+    handleLogout = () => {
         localStorage.removeItem(ACCESS_TOKEN);
         this.setState({
             currentUser: null,
@@ -47,9 +44,9 @@ class App extends Component {
             message: "You're successfully logged out.",
             description: "Good bye!",
         });
-    }
+    };
 
-    loadCurrentUser(onSuccessCallback) {
+    loadCurrentUser = (onSuccessCallback) => {
         this.setState({
             isLoading: true
         });
@@ -65,7 +62,7 @@ class App extends Component {
                 isLoading: false
             });
         });
-    }
+    };
 
     render() {
         return (

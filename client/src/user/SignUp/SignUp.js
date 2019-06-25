@@ -41,14 +41,6 @@ class SignUp extends Component {
                 response: null
             }
         };
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.onReCAPTCHAChange = this.onReCAPTCHAChange.bind(this);
-        this.validateUsernameAvailability = this.validateUsernameAvailability.bind(this);
-        this.validateEmailAvailability = this.validateEmailAvailability.bind(this);
-        this.isFormInvalid = this.isFormInvalid.bind(this);
-        this.handleAvatarUpload = this.handleAvatarUpload.bind(this);
-        this.handleAvatarRemove = this.handleAvatarRemove.bind(this);
     }
 
     validateName = (name) => {
@@ -70,7 +62,7 @@ class SignUp extends Component {
         }
     };
 
-    handleInputChange(event, validationFun) {
+    handleInputChange = (event, validationFun) => {
         const target = event.target;
         const inputName = target.name;
         const inputValue = target.value;
@@ -81,9 +73,9 @@ class SignUp extends Component {
                 ...validationFun(inputValue)
             }
         });
-    }
+    };
 
-    handleSubmit(event) {
+    handleSubmit = (event) => {
         event.preventDefault();
 
         const signupRequest = {
@@ -108,32 +100,32 @@ class SignUp extends Component {
                 description: error.message || 'Sorry! Something went wrong. Please try again!'
             });
         });
-    }
+    };
 
-    handleAvatarUpload(avatarId) {
+    handleAvatarUpload = (avatarId) => {
         this.setState({
             avatarId: {
                 value: avatarId
             }
         })
-    }
+    };
 
-    handleAvatarRemove() {
+    handleAvatarRemove = () => {
         this.setState({
             avatarId: {
                 value: null
             }
         });
-    }
+    };
 
-    onReCAPTCHAChange(response, validationFun) {
+    onReCAPTCHAChange = (response, validationFun) => {
         this.setState({
             reCAPTCHA: {
                 response: response,
                 ...validationFun(response)
             }
         });
-    }
+    };
 
     validateReCAPTCHA = (response) => {
         if (response !== null) {
@@ -149,7 +141,7 @@ class SignUp extends Component {
         }
     };
 
-    isFormInvalid() {
+    isFormInvalid = () => {
         return !(this.state.name.validateStatus === 'success' &&
             this.state.userName.validateStatus === 'success' &&
             this.state.email.validateStatus === 'success' &&
@@ -263,7 +255,7 @@ class SignUp extends Component {
         });
     };
 
-    validateEmailAvailability() {
+    validateEmailAvailability = () => {
         const emailValue = this.state.email.value;
         const emailValidation = this.validateEmail(emailValue);
 
@@ -317,7 +309,7 @@ class SignUp extends Component {
                 description: error.message || 'Sorry! Something went wrong. Please try again!'
             });
         });
-    }
+    };
 
     validatePassword = (password) => {
         let result = {};

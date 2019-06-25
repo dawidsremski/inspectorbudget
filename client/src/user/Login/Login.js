@@ -9,6 +9,7 @@ const FormItem = Form.Item;
 const Password = Input.Password;
 
 class Login extends Component {
+
     render() {
         const AntWrappedLoginForm = Form.create()(LoginForm);
         return (
@@ -29,6 +30,7 @@ class Login extends Component {
 }
 
 class LoginForm extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -39,13 +41,9 @@ class LoginForm extends Component {
                 value: ''
             }
         };
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.isFormInvalid = this.isFormInvalid.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-        LoginForm.validateIfNotBlank = LoginForm.validateIfNotBlank.bind(this);
     }
 
-    handleSubmit(event) {
+    handleSubmit = (event) => {
         event.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
@@ -66,29 +64,15 @@ class LoginForm extends Component {
                         });
                     }
                 })
-                // .finally(() => {
-                //     this.setState({
-                //         usernameOrEmail: {
-                //             value: ''
-                //         },
-                //         password: {
-                //             value: ''
-                //         }
-                //     });
-                //     this.props.form.setFieldsValue({
-                //         usernameOrEmail: '',
-                //         password: ''
-                //     });
-                // });
             }
         });
-    }
+    };
 
-    isFormInvalid() {
+    isFormInvalid = () => {
         return (this.state.usernameOrEmail.validateStatus !== 'success' || this.state.password.validateStatus !== 'success');
-    }
+    };
 
-    handleInputChange(event, validationFun) {
+    handleInputChange = (event, validationFun) => {
         const target = event.target;
         const inputName = target.name;
         const inputValue = target.value;
@@ -99,13 +83,13 @@ class LoginForm extends Component {
                 ...validationFun(inputValue)
             }
         });
-    }
+    };
     
-    static validateIfNotBlank(value) {
+    validateIfNotBlank = (value) => {
         return {
             validateStatus: (value !== null && value !== '')? 'success' : 'error' 
         }   
-    }
+    };
 
     render() {
         const { getFieldDecorator } = this.props.form;
@@ -121,7 +105,7 @@ class LoginForm extends Component {
                             size="large"
                             name="usernameOrEmail"
                             placeholder="Username or Email"
-                            onChange={(event) => this.handleInputChange(event, LoginForm.validateIfNotBlank)}
+                            onChange={(event) => this.handleInputChange(event, this.validateIfNotBlank)}
                         />
                     )}
                 </FormItem>
@@ -136,7 +120,7 @@ class LoginForm extends Component {
                             name="password"
                             type="password"
                             placeholder="Password"
-                            onChange={(event) => this.handleInputChange(event, LoginForm.validateIfNotBlank)}
+                            onChange={(event) => this.handleInputChange(event, this.validateIfNotBlank)}
                         />
                     )}
                 </FormItem>

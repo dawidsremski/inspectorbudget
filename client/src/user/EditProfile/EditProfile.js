@@ -39,14 +39,6 @@ class EditProfile extends Component {
                 value: null
             }
         };
-        this.fullfillForm = this.fullfillForm.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.validateEmailAvailability = this.validateEmailAvailability.bind(this);
-        this.isFormInvalid = this.isFormInvalid.bind(this);
-        this.isFormModified = this.isFormModified.bind(this);
-        this.handleAvatarUpload = this.handleAvatarUpload.bind(this);
-        this.handleAvatarRemove = this.handleAvatarRemove.bind(this);
     }
 
     componentDidMount() {
@@ -101,7 +93,7 @@ class EditProfile extends Component {
         }
     };
 
-    handleInputChange(event, validationFun) {
+    handleInputChange = (event, validationFun) => {
         const target = event.target;
         const inputName = target.name;
         const inputValue = target.value;
@@ -112,9 +104,9 @@ class EditProfile extends Component {
                 ...validationFun(inputValue)
             }
         });
-    }
+    };
 
-    handleSubmit(event) {
+    handleSubmit = (event) => {
         event.preventDefault();
 
         const profileEditRequest = {
@@ -137,26 +129,26 @@ class EditProfile extends Component {
                 description: error.message || 'Sorry! Something went wrong. Please try again!'
             });
         });
-    }
+    };
 
-    handleAvatarUpload(avatarId) {
+    handleAvatarUpload = (avatarId) => {
         this.setState({
             avatarId: {
                 value: avatarId,
                 validateStatus: 'success'
             }
         });
-    }
+    };
 
-    handleAvatarRemove() {
+    handleAvatarRemove = () => {
         this.setState({
             avatarId: {
                 value: null
             }
         });
-    }
+    };
 
-    isFormInvalid() {
+    isFormInvalid = () => {
         return !(this.state.name.validateStatus === 'success' &&
             this.state.email.validateStatus === 'success' &&
             this.state.password.validateStatus === 'success' &&
@@ -164,7 +156,7 @@ class EditProfile extends Component {
         );
     }
 
-    isFormModified() {
+    isFormModified = () => {
         if (this.props.currentUser !== null) {
             return (this.state.name.value !== this.props.currentUser.name ||
                 this.state.userName.value !== this.props.currentUser.userName ||
@@ -203,7 +195,7 @@ class EditProfile extends Component {
         }
     };
 
-    validateEmailAvailability() {
+    validateEmailAvailability = () => {
         const emailValue = this.state.email.value;
         const emailValidation = this.validateEmail(emailValue);
 
@@ -413,7 +405,7 @@ class EditProfile extends Component {
                                 </Button>
                                 <Button
                                     size="large"
-                                    onClick={() => this.fullfillForm()}
+                                    onClick={this.fullfillForm}
                                     disabled={!this.isFormModified()}>
                                     Reset
                                 </Button>
