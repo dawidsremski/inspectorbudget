@@ -12,6 +12,7 @@ import pl.codeve.inspectorbudget.user.User;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -49,7 +50,7 @@ public class UserPrincipal implements UserDetails {
                 user.getUserName(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getAvatar(),
+                user.getAvatar().orElse(null),
                 authorities
         );
     }

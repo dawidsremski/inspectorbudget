@@ -102,24 +102,21 @@ public class AuthenticationController {
 
         user.setRoles(Collections.singleton(userRole));
 
-        Avatar avatar = null;
+        Optional<Avatar> avatarOptional = Optional.empty();
 
         if (signUpRequest.getAvatarId() != null) {
-            Optional<Avatar> avatarOptional = this.avatarRepository.findById(signUpRequest.getAvatarId());
-            if (avatarOptional.isPresent()) {
-                avatar = avatarOptional.get();
-                user.setAvatar(avatar);
-            }
+            avatarOptional = this.avatarRepository.findById(signUpRequest.getAvatarId());
+            user.setAvatar(avatarOptional.orElse(null));
         }
-        User result = userRepository.save(user);
+        userRepository.save(user);
 
-        if (avatar != null) {
-            avatar.setInUse(true);
-            avatarRepository.save(avatar);
+        if (avatarOptional.isPresent()) {
+            avatarOptional.get().setInUse(true);
+            avatarRepository.save(avatarOptional.get());
         }
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")
-                .buildAndExpand(result.getUserName()).toUri();
+                .buildAndExpand(user.getUserName()).toUri();
 
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully."));
     }
@@ -138,9 +135,14 @@ public class AuthenticationController {
 
         if (authentication.isAuthenticated()) {
             String usernameOrEmail = loginRequest.getUsernameOrEmail();
-            User user = userRepository.findByUserNameOrEmail(usernameOrEmail, usernameOrEmail).get();
-            user.setLastLogin(LocalDateTime.now());
-            userRepository.save(user);
+            Optional<User> userOptional = userRepository.findByUserNameOrEmail(usernameOrEmail, usernameOrEmail);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                user.setLastLogin(LocalDateTime.now());
+                userRepository.save(user);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
         }
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }

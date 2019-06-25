@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AvatarService {
@@ -47,9 +48,9 @@ public class AvatarService {
         return avatarRepository.findById(avatarId).orElseThrow(AvatarNotFoundException::new);
     }
 
-    void setUser(Long avatarId, User user) throws AvatarNotFoundException {
-        Avatar avatar = avatarRepository.findById(avatarId).orElseThrow(AvatarNotFoundException::new);
-        user.setAvatar(avatar);
+    void setUser(Long avatarId, User user) {
+        Optional<Avatar> avatarOptional = avatarRepository.findById(avatarId);
+        user.setAvatar(avatarOptional.orElse(null));
         userRepository.save(user);
     }
 

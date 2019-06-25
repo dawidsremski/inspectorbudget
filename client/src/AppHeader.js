@@ -16,6 +16,7 @@ class AppHeader extends Component {
                 <Menu.Item key="/">
                     <Link to="/">Home</Link>
                 </Menu.Item>,
+                this.adminMenu(),
                 <SubMenu className="menu-item-right"
                          key="profile-menu"
                          trigger={['click']}
@@ -71,6 +72,19 @@ class AppHeader extends Component {
                 </div>
             </Header>
         );
+    }
+
+    adminMenu() {
+        if (this.props.currentUser.roles.includes("ROLE_ADMIN")) {
+            return ([
+                <Menu.Item key="/admin/users">
+                    <Link to="/admin/users">Users</Link>
+                </Menu.Item>,
+                <Menu.Item key="/admin/settings">
+                    <Link to="/admin/settings">Settings</Link>
+                </Menu.Item>
+            ])
+        }
     }
 }
 

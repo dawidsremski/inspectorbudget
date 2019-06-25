@@ -16,6 +16,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Data
@@ -72,4 +73,8 @@ public class User extends DateAudit {
     private Set<Role> roles = new HashSet<>();
 
     private LocalDateTime lastLogin;
+
+    public Optional<Avatar> getAvatar() {
+        return Optional.ofNullable(avatar);
+    }
 }
