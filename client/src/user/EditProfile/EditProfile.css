@@ -1,14 +1,10 @@
 .sign-up-form-button {
-    margin-right: 25px;
+    margin-right: 12px;
 }
 
 .sign-up-box {
     background: #fff;
     padding: 25px;
-}
-
-.avatar-form-item {
-    margin-bottom: 24px;
 }
 
 .avatar-uploader .ant-upload.ant-upload-select-picture-card {

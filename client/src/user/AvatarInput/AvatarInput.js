@@ -21,7 +21,7 @@ class AvatarInput extends Component {
     };
 
     componentDidMount() {
-        if (this.props.currentId !== null) {
+        if (this.props.currentId !== null && this.props.currentId !== undefined) {
             this.setState({
                 imageUrl: API_BASE_URL + `/user/avatar?id=${this.props.currentId}`
             });
@@ -31,7 +31,7 @@ class AvatarInput extends Component {
     componentDidUpdate(prevProps) {
         if (this.props.currentId !== prevProps.currentId) {
             this.setState({
-                imageUrl: (this.props.currentId !== null) ?
+                imageUrl: (this.props.currentId !== null && this.props.currentId !== undefined) ?
                     API_BASE_URL + `/user/avatar?id=${this.props.currentId}` : ''
             });
         }
@@ -72,7 +72,7 @@ class AvatarInput extends Component {
                         onClick={() => this.props.onRemove()}
                         icon="close"
                         style={{
-                            display: (this.props.currentId !== null)? 'block' : 'none'
+                            display: (this.props.currentId !== null  && this.props.currentId !== undefined)? 'block' : 'none'
                         }}>
                 </Button>
                 <Upload

@@ -34,6 +34,9 @@ class SignUp extends Component {
             repeatedPassword: {
                 value: ''
             },
+            avatarId: {
+                value: null
+            },
             reCAPTCHA: {
                 response: null
             }
@@ -45,6 +48,7 @@ class SignUp extends Component {
         this.validateEmailAvailability = this.validateEmailAvailability.bind(this);
         this.isFormInvalid = this.isFormInvalid.bind(this);
         this.handleAvatarUpload = this.handleAvatarUpload.bind(this);
+        this.handleAvatarRemove = this.handleAvatarRemove.bind(this);
     }
 
     validateName = (name) => {
@@ -88,7 +92,7 @@ class SignUp extends Component {
             userName: this.state.userName.value,
             password: this.state.password.value,
             repeatedPassword: this.state.repeatedPassword.value,
-            avatarId: this.state.avatarId,
+            avatarId: this.state.avatarId.value,
             reCAPTCHAResponse: this.state.reCAPTCHA.response
         };
         signUp(signupRequest)
@@ -108,8 +112,18 @@ class SignUp extends Component {
 
     handleAvatarUpload(avatarId) {
         this.setState({
-            avatarId: avatarId
+            avatarId: {
+                value: avatarId
+            }
         })
+    }
+
+    handleAvatarRemove() {
+        this.setState({
+            avatarId: {
+                value: null
+            }
+        });
     }
 
     onReCAPTCHAChange(response, validationFun) {
@@ -443,7 +457,9 @@ class SignUp extends Component {
                             <FormItem
                                 className="avatar-form-item">
                                 <AvatarInput action={API_BASE_URL + "/user/avatar"}
-                                             onChange={this.handleAvatarUpload}/>
+                                             onChange={this.handleAvatarUpload}
+                                             onRemove={this.handleAvatarRemove}
+                                             currentId={this.state.avatarId.value}/>
                             </FormItem>
                             <FormItem
                                 required

@@ -39,59 +39,48 @@ class EditProfile extends Component {
                 value: null
             }
         };
+        this.fullfillForm = this.fullfillForm.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.validateEmailAvailability = this.validateEmailAvailability.bind(this);
         this.isFormInvalid = this.isFormInvalid.bind(this);
+        this.isFormModified = this.isFormModified.bind(this);
         this.handleAvatarUpload = this.handleAvatarUpload.bind(this);
         this.handleAvatarRemove = this.handleAvatarRemove.bind(this);
     }
 
     componentDidMount() {
         if (this.props.currentUser !== null) {
-            this.setState({
-                    name: {
-                        value: this.props.currentUser.name,
-                        validateStatus: 'success'
-                    },
-                    userName: {
-                        value: this.props.currentUser.userName
-                    },
-                    email: {
-                        value: this.props.currentUser.email,
-                        validateStatus: 'success'
-                    },
-                    avatarId: {
-                        value: this.props.currentUser.avatarId,
-                        validateStatus: 'success'
-                    }
-                }
-            );
+            this.fullfillForm();
         }
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.currentUser !== this.props.currentUser) {
-            this.setState({
-                    name: {
-                        value: this.props.currentUser.name,
-                        validateStatus: 'success'
-                    },
-                    userName: {
-                        value: this.props.currentUser.userName
-                    },
-                    email: {
-                        value: this.props.currentUser.email,
-                        validateStatus: 'success'
-                    },
-                    avatarId: {
-                        value: this.props.currentUser.avatarId,
-                        validateStatus: 'success'
-                    }
-                }
-            );
+            this.fullfillForm();
         }
     }
+
+    fullfillForm = () => {
+        this.setState({
+                name: {
+                    value: this.props.currentUser.name,
+                    validateStatus: 'success'
+                },
+                userName: {
+                    value: this.props.currentUser.userName
+                },
+                email: {
+                    value: this.props.currentUser.email,
+                    validateStatus: 'success'
+                },
+                avatarId: {
+                    value: this.props.currentUser.avatarId,
+                    validateStatus: 'success'
+                }
+            }
+        );
+    };
 
     validateName = (name) => {
         if (name.length < NAME_MIN_LENGTH) {
@@ -174,6 +163,16 @@ class EditProfile extends Component {
             this.state.repeatedPassword.validateStatus === 'success'
         );
     }
+
+    isFormModified() {
+        if (this.props.currentUser !== null) {
+            return (this.state.name.value !== this.props.currentUser.name ||
+                this.state.userName.value !== this.props.currentUser.userName ||
+                this.state.email.value !== this.props.currentUser.email ||
+                this.state.avatarId.value !== this.props.currentUser.avatarId
+            )
+        } else return false;
+    };
 
     validateEmail = (email) => {
         if (!email) {
@@ -398,8 +397,7 @@ class EditProfile extends Component {
                             {/*value={this.state.repeatedPassword.value}*/}
                             {/*onChange={(event) => this.handleInputChange(event, this.validateRepeatedPassword)}/>*/}
                             {/*</FormItem>*/}
-                            <FormItem
-                                className="avatar-form-item">
+                            <FormItem>
                                 <AvatarInput action={API_BASE_URL + "/user/avatar"}
                                              onChange={this.handleAvatarUpload}
                                              onRemove={this.handleAvatarRemove}
@@ -410,8 +408,14 @@ class EditProfile extends Component {
                                         htmlType="submit"
                                         size="large"
                                         className="sign-up-form-button"
-                                        disabled={this.isFormInvalid()}>
+                                        disabled={this.isFormInvalid() || !this.isFormModified()}>
                                     Save
+                                </Button>
+                                <Button
+                                    size="large"
+                                    onClick={() => this.fullfillForm()}
+                                    disabled={!this.isFormModified()}>
+                                    Reset
                                 </Button>
                             </FormItem>
                         </Form>

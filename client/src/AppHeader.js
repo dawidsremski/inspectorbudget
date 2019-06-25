@@ -39,7 +39,7 @@ class AppHeader extends Component {
                     </li>
                     <Menu.Divider/>
                     <Menu.Item key="/profile">
-                        <Link to="/profile">Profile</Link>
+                        <Link to="/profile">Edit profile</Link>
                     </Menu.Item>
                     <Menu.Item key="logout" onClick={this.props.onLogout}>
                         Logout
