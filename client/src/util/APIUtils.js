@@ -42,6 +42,17 @@ export function getCurrentUser() {
     });
 }
 
+export function getUsers(page = 1) {
+    if (!localStorage.getItem(ACCESS_TOKEN)) {
+        return Promise.reject("No access token set.");
+    }
+
+    return request({
+        url: API_BASE_URL + `/user?page=${page}`,
+        method: 'GET'
+    });
+}
+
 export function signUp(signupRequest) {
     return request({
         url: API_BASE_URL + "/auth/signup",

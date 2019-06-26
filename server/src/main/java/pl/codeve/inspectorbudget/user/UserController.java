@@ -1,5 +1,8 @@
 package pl.codeve.inspectorbudget.user;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -7,19 +10,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import pl.codeve.inspectorbudget.common.ApiResponse;
-import pl.codeve.inspectorbudget.user.UserAvailability;
-import pl.codeve.inspectorbudget.user.UserResponse;
-import pl.codeve.inspectorbudget.user.UserRepository;
 import pl.codeve.inspectorbudget.security.CurrentUser;
 import pl.codeve.inspectorbudget.security.UserPrincipal;
 import pl.codeve.inspectorbudget.user.avatar.Avatar;
 import pl.codeve.inspectorbudget.user.avatar.AvatarRepository;
-import pl.codeve.inspectorbudget.user.role.Role;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -29,6 +26,12 @@ public class UserController {
     private UserRepository userRepository;
     private AvatarRepository avatarRepository;
 
+    private UserResponse map(User user) {
+        return new UserResponse(user.getId(), user.getName(), user.getUserName(), user.getEmail(),
+                user.getRoles().stream().map(role -> role.getName().toString()).collect(Collectors.toList()),
+                (user.getAvatar().isPresent()) ? user.getAvatar().get().getId() : null);
+    }
+
     UserController(UserRepository userRepository,
                    AvatarRepository avatarRepository) {
         this.userRepository = userRepository;
@@ -37,13 +40,10 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> getUsers() {
-        List<UserResponse> users = userRepository.findAll()
-                .stream().map(u -> new UserResponse(u.getId(), u.getName(), u.getUserName(), u.getEmail(),
-                        u.getRoles().stream().map(Role::toString).collect(Collectors.toList()),
-                        u.getAvatar().isPresent()? u.getAvatar().get().getId() : null))
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    public ResponseEntity<?> getUsers(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
+        Page<User> users = userRepository.findAll(pageable);
+        Page<UserResponse> userResponses = users.map(this::map);
+        return new ResponseEntity<>(userResponses, HttpStatus.OK);
     }
 
     @GetMapping("/checkUsernameAvailability")

@@ -8,16 +8,15 @@ import {getCurrentUser} from "./util/APIUtils";
 import SignUp from "./user/SignUp/SignUp";
 import {ACCESS_TOKEN} from "./config/index";
 import EditProfile from "./user/EditProfile/EditProfile";
+import UserList from "./admin/UserList/UserList";
 
 class App extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            currentUser: null,
-            isAuthenticated: false,
-            isLoading: false
-        };
-    }
+
+    state = {
+        currentUser: null,
+        isAuthenticated: false,
+        isLoading: false
+    };
 
     componentDidMount() {
         this.loadCurrentUser();
@@ -74,16 +73,20 @@ class App extends Component {
                 />
                 <Layout className="app-content">
                     <Switch>
+                        <Route exact path="/"/>
                         <Route path="/login" render={(props) =>
-                            <Login onLogin={this.handleLogin} {...props} />}
-                        />
+                            <Login onLogin={this.handleLogin} {...props} />
+                        }/>
                         <Route path="/signup" render={(props) =>
-                            <SignUp/>}
-                        />
+                            <SignUp/>
+                        }/>
                         <Route path="/profile" render={(props) =>
                             <EditProfile currentUser={this.state.currentUser}
-                            onProfileEdit={this.loadCurrentUser}/>}
-                        />
+                                         onProfileEdit={this.loadCurrentUser}/>
+                        }/>
+                        <Route path="/admin/users" render={(props) =>
+                            <UserList/>
+                        }/>
                     </Switch>
                 </Layout>
             </Layout>

@@ -1,0 +1,36 @@
+/*lg*/
+@media screen and (max-width: 992px) {
+    .column-avatar {
+        display: none;
+    }
+}
+
+/*md*/
+@media screen and (max-width: 768px) {
+    .column-name {
+        display: none;
+    }
+}
+
+/*sm*/
+@media screen and (max-width: 576px) {
+    .column-email {
+        display: none;
+    }
+}
+
+/*xs*/
+@media screen and (max-width: 480px) {
+    .column-roles {
+        display: none;
+    }
+}
+
+.column-roles {
+    padding: 12px 16px !important;
+}
+
+.column-roles .ant-tag {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
