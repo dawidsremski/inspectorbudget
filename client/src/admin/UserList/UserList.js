@@ -12,9 +12,7 @@ const columns = [
         dataIndex: 'id',
         key: 'id',
         className: 'column-id',
-        sortOrder: 'ascend',
-        defaultSortOrder: 'ascend',
-        selectable: true
+        sorter: true
     },
     {
         title: 'Avatar',
@@ -31,19 +29,21 @@ const columns = [
         dataIndex: 'name',
         key: 'name',
         className: 'column-name',
-        hideOnSmall: true
+        sorter: true,
     },
     {
         title: 'Username',
         dataIndex: 'userName',
         key: 'userName',
         className: 'column-username',
+        sorter: true,
     },
     {
         title: 'Email',
         dataIndex: 'email',
         key: 'email',
         className: 'column-email',
+        sorter: true,
     },
     {
         title: 'Roles',
@@ -71,16 +71,15 @@ class UserList extends Component {
         isLoading: false
     };
 
-
     componentDidMount() {
-        this.loadUsers();
+        this.loadUsers(0);
     }
 
-    loadUsers = (onSuccessCallback) => {
+    loadUsers = (page, sortField, sortOrder, onSuccessCallback) => {
         this.setState({
             isLoading: true
         });
-        getUsers(this.state.currentPage).then(response => {
+        getUsers(page, sortField, sortOrder).then(response => {
             this.setState({
                 page: response,
                 isLoading: false
@@ -94,10 +93,8 @@ class UserList extends Component {
         });
     };
 
-    handlePageChange = (page) => {
-        this.setState({
-            currentPage: page
-        }, () => this.loadUsers());
+    handleTableChange = (pagination, filters, sorter) => {
+        this.loadUsers(pagination.current - 1, sorter.field, sorter.order);
     };
 
     render() {
@@ -111,11 +108,10 @@ class UserList extends Component {
                            rowKey='id'
                            dataSource={this.state.page.content}
                            pagination={{
-                               current: this.state.currentPage + 1,
                                pageSize: this.state.page.pageable.pageSize,
                                total: this.state.page.totalElements,
-                               onChange: page => this.handlePageChange(page - 1)
                            }}
+                           onChange={this.handleTableChange}
                     />
                     }
                 </Col>

@@ -42,13 +42,17 @@ export function getCurrentUser() {
     });
 }
 
-export function getUsers(page = 1) {
+export function getUsers(page = 1, sortField, sortOrder) {
     if (!localStorage.getItem(ACCESS_TOKEN)) {
         return Promise.reject("No access token set.");
     }
 
+    let sortDirection = (sortOrder === 'ascend')? 'asc' : 'desc';
+
     return request({
-        url: API_BASE_URL + `/user?page=${page}`,
+        url: API_BASE_URL + `/user?page=${page}`
+        + ((sortField !== undefined && sortField !== null)? `&sort=${sortField}` : '')
+        + ((sortOrder !== undefined && sortOrder !== null)? `,${sortDirection}` : ''),
         method: 'GET'
     });
 }
