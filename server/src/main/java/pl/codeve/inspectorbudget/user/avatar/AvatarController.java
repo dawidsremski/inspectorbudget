@@ -1,5 +1,6 @@
 package pl.codeve.inspectorbudget.user.avatar;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,13 +14,10 @@ import java.util.Base64;
 
 @Controller
 @RequestMapping("/api/user/avatar")
+@AllArgsConstructor
 public class AvatarController {
 
     private AvatarService avatarService;
-
-    AvatarController(AvatarService avatarService) {
-        this.avatarService = avatarService;
-    }
 
     @PostMapping
     ResponseEntity<?> uploadAvatar(MultipartFile file) throws IOException {

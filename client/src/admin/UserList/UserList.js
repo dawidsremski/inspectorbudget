@@ -6,7 +6,7 @@ import {getInitials} from "../../util/Utils";
 import {API_BASE_URL} from "../../config";
 import './UserList.css';
 
-const getRoleFilters = function() {
+const getRoleFilters = function () {
 
     let roleFilters = [];
 

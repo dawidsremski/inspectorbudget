@@ -88,7 +88,7 @@ export function signUp(signupRequest) {
 
 export function editProfile(editProfileRequest) {
     return request({
-        url: API_BASE_URL + "/user",
+        url: API_BASE_URL + "/user/me",
         method: 'PATCH',
         body: JSON.stringify(editProfileRequest)
     });

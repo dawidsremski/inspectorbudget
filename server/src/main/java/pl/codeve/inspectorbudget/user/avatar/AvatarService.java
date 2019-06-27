@@ -1,5 +1,6 @@
 package pl.codeve.inspectorbudget.user.avatar;
 
+import lombok.AllArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 import org.springframework.stereotype.Service;
@@ -15,16 +16,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class AvatarService {
 
     private AvatarRepository avatarRepository;
     private UserRepository userRepository;
-
-    AvatarService(AvatarRepository avatarRepository,
-                  UserRepository userRepository) {
-        this.avatarRepository = avatarRepository;
-        this.userRepository = userRepository;
-    }
 
     Long uploadAvatar(MultipartFile multipartFile) throws IOException {
 
