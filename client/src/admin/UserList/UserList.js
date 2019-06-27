@@ -1,10 +1,26 @@
 import {Component} from "react";
-import {getUsers} from "../../util/APIUtils";
+import {getRoles, getUsers} from "../../util/APIUtils";
 import {Avatar, Col, Row, Table, Tag} from "antd";
 import React from "react";
 import {getInitials} from "../../util/Utils";
 import {API_BASE_URL} from "../../config";
 import './UserList.css';
+
+const getRoleFilters = function() {
+
+    let roleFilters = [];
+
+    getRoles().then(response => {
+        response.forEach((role) => {
+            roleFilters.push({
+                text: role,
+                value: role
+            })
+        })
+    });
+
+    return roleFilters;
+};
 
 const columns = [
     {
@@ -50,6 +66,7 @@ const columns = [
         dataIndex: 'roles',
         key: 'roles',
         className: 'column-roles',
+        filters: getRoleFilters(),
         render: roles =>
             <span>
                 {roles.map(role =>
@@ -75,26 +92,25 @@ class UserList extends Component {
         this.loadUsers(0);
     }
 
-    loadUsers = (page, sortField, sortOrder, onSuccessCallback) => {
+    loadUsers = (page, sortField, sortOrder, filters, onSuccessCallback) => {
         this.setState({
             isLoading: true
         });
-        getUsers(page, sortField, sortOrder).then(response => {
+        getUsers(page, sortField, sortOrder, filters).then(response => {
             this.setState({
                 page: response,
                 isLoading: false
             });
-            console.log(this.state);
             onSuccessCallback();
         }).catch(error => {
             this.setState({
                 isLoading: false
-            });
-        });
+            })
+        })
     };
 
     handleTableChange = (pagination, filters, sorter) => {
-        this.loadUsers(pagination.current - 1, sorter.field, sorter.order);
+        this.loadUsers(pagination.current - 1, sorter.field, sorter.order, filters);
     };
 
     render() {
@@ -113,11 +129,9 @@ class UserList extends Component {
                            }}
                            onChange={this.handleTableChange}
                     />
-                    }
                 </Col>
             </Row>
         )
-            ;
     }
 }
 

@@ -42,17 +42,38 @@ export function getCurrentUser() {
     });
 }
 
-export function getUsers(page = 1, sortField, sortOrder) {
+export function getUsers(page = 1, sortField, sortOrder, filters) {
     if (!localStorage.getItem(ACCESS_TOKEN)) {
         return Promise.reject("No access token set.");
     }
 
-    let sortDirection = (sortOrder === 'ascend')? 'asc' : 'desc';
+    let sortDirection = (sortOrder === 'ascend') ? 'asc' : 'desc';
+
+    let requestURL = `${API_BASE_URL}/user?`;
+
+    if (!isNaN(page)) {
+        requestURL = requestURL.concat(`&page=${page}`)
+    }
+
+    if (sortField !== undefined && sortField !== null) {
+        requestURL = requestURL.concat(`&sort=${sortField}`);
+        if (sortOrder !== undefined && sortOrder !== null) {
+            requestURL = requestURL.concat(`,${sortDirection}`);
+        }
+    }
+
+    if (filters !== undefined && filters !== null) {
+        if (filters.roles !== undefined && filters.roles !== null) {
+            for (let i = 0; i < filters.roles.length; i++) {
+                requestURL = requestURL.concat(
+                    (i === 0) ? `&role=${filters.roles[i]}` : `,${filters.roles[i]}`
+                )
+            }
+        }
+    }
 
     return request({
-        url: API_BASE_URL + `/user?page=${page}`
-        + ((sortField !== undefined && sortField !== null)? `&sort=${sortField}` : '')
-        + ((sortOrder !== undefined && sortOrder !== null)? `,${sortDirection}` : ''),
+        url: requestURL,
         method: 'GET'
     });
 }
@@ -83,6 +104,17 @@ export function checkUsernameAvailability(username) {
 export function checkEmailAvailability(email) {
     return request({
         url: API_BASE_URL + "/user/checkEmailAvailability?email=" + email,
+        method: 'GET'
+    });
+}
+
+export function getRoles() {
+    if (!localStorage.getItem(ACCESS_TOKEN)) {
+        return Promise.reject("No access token set.");
+    }
+
+    return request({
+        url: API_BASE_URL + "/role",
         method: 'GET'
     });
 }

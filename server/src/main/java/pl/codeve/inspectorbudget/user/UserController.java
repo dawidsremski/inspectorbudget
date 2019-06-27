@@ -2,6 +2,7 @@ package pl.codeve.inspectorbudget.user;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,10 @@ import pl.codeve.inspectorbudget.security.CurrentUser;
 import pl.codeve.inspectorbudget.security.UserPrincipal;
 import pl.codeve.inspectorbudget.user.avatar.Avatar;
 import pl.codeve.inspectorbudget.user.avatar.AvatarRepository;
+import pl.codeve.inspectorbudget.user.role.RoleRepository;
+import pl.codeve.inspectorbudget.user.specification.UserFieldStartsWithSpec;
+import pl.codeve.inspectorbudget.user.specification.UserHasIdSpec;
+import pl.codeve.inspectorbudget.user.specification.UserHasRoleSpec;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -25,6 +30,7 @@ public class UserController {
 
     private UserRepository userRepository;
     private AvatarRepository avatarRepository;
+    private RoleRepository roleRepository;
 
     private UserResponse map(User user) {
         return new UserResponse(user.getId(), user.getName(), user.getUserName(), user.getEmail(),
@@ -33,15 +39,35 @@ public class UserController {
     }
 
     UserController(UserRepository userRepository,
-                   AvatarRepository avatarRepository) {
+                   AvatarRepository avatarRepository,
+                   RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.avatarRepository = avatarRepository;
+        this.roleRepository = roleRepository;
     }
 
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> getUsers(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
-        Page<User> users = userRepository.findAll(pageable);
+    public ResponseEntity<?> getUsers(
+            @RequestParam(name = "id", required = false) Long id,
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "userName", required = false) String userName,
+            @RequestParam(name = "email", required = false) String email,
+            @RequestParam(name = "role", required = false) List<String> roleNames,
+            @PageableDefault(size = 5, sort = "id") Pageable pageable) {
+
+        Specification<User> userSpec = Specification
+                .where(new UserHasIdSpec(id))
+                .and(new UserFieldStartsWithSpec(User_.NAME, name))
+                .and(new UserFieldStartsWithSpec(User_.USER_NAME, userName))
+                .and(new UserFieldStartsWithSpec(User_.EMAIL, email));
+
+        if (roleNames != null) {
+            for (String roleName : roleNames)
+                userSpec = userSpec.and(new UserHasRoleSpec(roleName, roleRepository));
+        }
+
+        Page<User> users = userRepository.findAll(userSpec, pageable);
         Page<UserResponse> userResponses = users.map(this::map);
         return new ResponseEntity<>(userResponses, HttpStatus.OK);
     }
